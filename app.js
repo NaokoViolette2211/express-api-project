@@ -53,7 +53,7 @@ app.get('/cars', async function(req, res) {
     console.log('/cars/:id')
     
     const [cars] = await req.db.query(`
-    SELECT * FROM cars`);
+    SELECT * FROM cars WHERE deleted_flag = 0`);
     res.json( cars );
     // console.log(cars[0])
   } catch (err) {
@@ -80,9 +80,10 @@ app.post('/cars', async function(req, res) {
     const insert = await req.db.query(
       `INSERT INTO cars (make, model, year, date_created) 
       VALUES (:make, :model, :year, NOW())`,{
-        make: req.body.make,
-        model: req.body.model,
-        year: req.body.year
+        make, model, year
+        // make: req.body.make,
+        // model: req.body.model,
+        // year: req.body.year
       }
     );
     res.json({ success: true, message: 'Cars successfully created', data: null });
@@ -97,7 +98,7 @@ app.delete('/cars/:id', async function(req,res) {
   try {
     console.log('req.params /cars/:id', req.params)
     const deleteRow = await req.db.query(`
-    DELETE FROM cars WHERE id = :id`, {
+    UPDATE cars SET deleted_flag = 1 WHERE id = :id`, {
       id: req.params.id
     });
     res.json({ success: true, message: 'Cars successfully deleted', data: null })
@@ -110,9 +111,9 @@ app.delete('/cars/:id', async function(req,res) {
 app.put('/cars/:id', async function(req,res) {
   try {
     const modifyData = await req.db.query(`
-    UPDATE cars SET deleted_flag = :deleted_flag WHERE id = :id`, {
+    UPDATE cars SET year = :year WHERE id = :id`, {
       id: req.params.id,
-      deleted_flag: req.body.deleted_flag
+      year: req.body.year
     });
     res.json({ success: true, message: 'Cars successfully updated', data: null });
   } catch (err) {
