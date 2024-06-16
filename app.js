@@ -111,8 +111,10 @@ app.delete('/cars/:id', async function(req,res) {
 app.put('/cars/:id', async function(req,res) {
   try {
     const modifyData = await req.db.query(`
-    UPDATE cars SET year = :year WHERE id = :id`, {
+    UPDATE cars SET make = :make, model = :model, year = :year WHERE id = :id`, {
       id: req.params.id,
+      make: req.body.make,
+      model: req.body.model,
       year: req.body.year
     });
     res.json({ success: true, message: 'Cars successfully updated', data: null });
@@ -130,7 +132,7 @@ app.put('/addcolumn', async (req, res) => {
     res.json({ success: true, message: 'new column successfully added', data: null });
   } catch (err) {
     console.error(err);
-    res.json({success: false, message: err, data: null});
+    res.json({ success: false, message: err, data: null});
   }
 })
 
